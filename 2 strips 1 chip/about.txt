@@ -1,0 +1,1 @@
+This folder contains files to control 2 RGB strips using 1 ESP8266 12 chip because it has enough GPIO ports
