@@ -1,6 +1,6 @@
 #include "ESPHelper.h" // you need to download this library from here https://github.com/ItKindaWorks/ESPHelper and add to Arduino IDE
 
-#define TOPIC "/home/RGBLight1"  // topic that ESP8266 will be monitoring for new commands
+#define TOPIC "/home/RGBLight1"  // mqtt topic that ESP8266 will be monitoring for new commands
 #define STATUS TOPIC "/status"
 
 #define RED_PIN_LEFT 16    
@@ -9,7 +9,7 @@
 
 #define RED_PIN_RIGHT 5    
 #define GREEN_PIN_RIGHT 4
-#define BLUE_PIN_RIGHT 15
+#define BLUE_PIN_RIGHT 10
 
 #define POWER_SWITCH_PIN 13
 
@@ -36,6 +36,8 @@ int updateSide = 0;
 
 int superMode = STANDBY;  // global mode for chip. STANDBY when both connected strips are off
 boolean newCommand = false;
+
+boolean isDebugNow = true;
 
 // to check if both are not poweredon disable powerunit
 boolean isPoweredOn = false;
@@ -122,7 +124,6 @@ void setup() {
 
 	colorTest();
 
-
 	myESP.addSubscription(lightTopic);
 	myESP.begin();
 	myESP.setCallback(callback);
@@ -144,35 +145,38 @@ void loop(){
 void lightHandler(){
 	if(newCommand){
 		if (updateType == POWER){
-			if (superMode == STANDBY){
+			if(superMode == STANDBY){
 
 				// powering off left strip
-				digitalWrite(redPinLeft, LOW);
-				digitalWrite(greenPinLeft, LOW);
-				digitalWrite(bluePinLeft, LOW);
-
+				analogWrite(redPinLeft, 0);
+				analogWrite(greenPinLeft, 0);
+				analogWrite(bluePinLeft, 0);
 				// powering off right strip
-				digitalWrite(redPinRight, LOW);
-				digitalWrite(greenPinRight, LOW);
-				digitalWrite(bluePinRight, LOW);
+				analogWrite(redPinRight, 0);
+				analogWrite(greenPinRight, 0);
+				analogWrite(bluePinRight, 0);
 
 				// as no strip is ON, disabling PC power supply unit
 				digitalWrite(powerPin, LOW);
-			}else if (superMode == SET){
+			}else if(superMode == SET){
 				if(!isPoweredOn){  // powering ON power supply unit
 					digitalWrite(powerPin, HIGH);
 					isPoweredOn = true;
 					myESP.publish(statusTopic, "Enabled power supply unit", true);
-				}
+				};
+
 				if(updateSide == LEFT){
-					if (isPoweredOnLeft){
+					if(isPoweredOnLeft){
 						analogWrite(redPinLeft, currentColorLeft.red);
 						analogWrite(greenPinLeft, currentColorLeft.green);
 						analogWrite(bluePinLeft, currentColorLeft.blue);
 					} else {
-						digitalWrite(redPinLeft, LOW);
-						digitalWrite(greenPinLeft, LOW);
-						digitalWrite(bluePinLeft, LOW);
+						analogWrite(redPinLeft, 0);
+						analogWrite(greenPinLeft, 0);
+						analogWrite(bluePinLeft, 0);
+						if(isDebugNow){
+							myESP.publish(statusTopic, "Powered off left side", true);
+						 };
 					}
 				}
 				else if (updateSide == RIGHT){
@@ -181,11 +185,11 @@ void lightHandler(){
 						analogWrite(greenPinRight, currentColorRight.green);
 						analogWrite(bluePinRight, currentColorRight.blue);
 					} else {
-						digitalWrite(redPinRight, LOW);
-						digitalWrite(greenPinRight, LOW);
-						digitalWrite(bluePinRight, LOW);
+						analogWrite(redPinRight, 0);
+						analogWrite(greenPinRight, 0);
+						analogWrite(bluePinRight, 0);
 					}
-				}
+				};
 			}
 			
 		}else if (updateType == RGB){
@@ -215,7 +219,7 @@ void lightHandler(){
 				if(currentColorRight.blue != newColorRight.blue){
 					analogWrite(bluePinRight, newColorRight.blue);
 					currentColorRight.blue = newColorRight.blue;
-				}	
+				} 
 			}
 		}
 		newCommand = false;
@@ -282,8 +286,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
 			}
 		}
 	}
-   strcpy(statusString, newPayload);
-   myESP.publish(statusTopic, statusString, true);
+	 strcpy(statusString, newPayload);
+	 myESP.publish(statusTopic, statusString, true);
 }
 
 
@@ -311,7 +315,7 @@ void colorTest(){
 	digitalWrite(greenPinRight, HIGH);
 	digitalWrite(bluePinLeft, HIGH);
 	digitalWrite(bluePinRight, HIGH);
-	delay(777);
+	delay(666);
 	digitalWrite(redPinLeft, LOW);
 	digitalWrite(redPinRight, LOW);
 	digitalWrite(greenPinLeft, LOW);
