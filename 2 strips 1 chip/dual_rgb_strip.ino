@@ -292,6 +292,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
 
 void colorTest(){
+	digitalWrite(powerPin, HIGH);  // power on PC's power supply unit
+	delay(1111);  // give it a secong to power on
+
 	digitalWrite(redPinLeft, HIGH);
 	digitalWrite(redPinRight, HIGH);
 	delay(333);
@@ -322,4 +325,6 @@ void colorTest(){
 	digitalWrite(greenPinRight, LOW);
 	digitalWrite(bluePinLeft, LOW);
 	digitalWrite(bluePinRight, LOW);
+
+	digitalWrite(powerPin, LOW);  // poweroff PC's power supply unit
 }

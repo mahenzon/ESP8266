@@ -15,7 +15,7 @@ For ESP8266 flashing you need Arduino IDE and the following libraries:
 * [Metro](https://www.pjrc.com/teensy/td_libs_Metro.html)
 * [pubsubclient](https://github.com/knolleary/pubsubclient)
 
-Folder *2 strips 1 chip* contains 2 .js files for HAP-NodeJS server and 1 .ino file for flashing ESP8266 using Arduino IDE. Together they allow to control 2 independent RGB strips using 1 ESP8266 chip.
+Folder *2 strips 1 chip* contains two .js files for HAP-NodeJS server and one .ino file for flashing ESP8266 using Arduino IDE. Together they allow to control two independent RGB strips using one ESP8266 chip.
 
 Live tests were made, chip controls two RGB strips without errors and powers on / off power supply unit when needed.
 
@@ -31,6 +31,8 @@ Speaking of flashing ESP8266-12. I reccomend to disconnect everything from chip 
 * GPIO15 to GND (always)
 
 Notice that your UART converter can output two currencies: 5v and 3.3v. Check if it is in 3.3v mode because 5v will burn the chip.
+
+In theory you can update chip over the air. There is a library for it named *Arduino OTA*. And ESPHelper library [supports OTA updates](https://github.com/ItKindaWorks/ESPHelper/blob/master/examples/OTA/OTA.ino) but on my computer Arduino IDE cannot *see* my chip. And I tried to update it using [web update](http://esp8266.github.io/Arduino/versions/2.0.0/doc/ota_updates/ota_updates.html#web-browser) but had no success at that too.
 
 <hr>
 `ru`<br>
@@ -49,7 +51,7 @@ Notice that your UART converter can output two currencies: 5v and 3.3v. Check if
 * [Metro](https://www.pjrc.com/teensy/td_libs_Metro.html)
 * [pubsubclient](https://github.com/knolleary/pubsubclient)
 
-В папке *2 strips 1 chip* лежит 2 файла для HAP-NodeJS, представляющие 2 независимых HomeKit устройства, и .ino файл, которым надо прошить ESP8266. Вместе они позволяют управлять двумя независимыми RGB лентами.
+В папке *2 strips 1 chip* лежит два файла для HAP-NodeJS, представляющие два независимых HomeKit устройства, и один .ino файл, которым надо прошить ESP8266. Вместе они позволяют управлять двумя независимыми RGB лентами.
 
 Тесты проведены, чип корректно управляет двумя независимыми лентами и своевременно включает и выключает компьютерный блок питания.
 
@@ -65,3 +67,5 @@ Notice that your UART converter can output two currencies: 5v and 3.3v. Check if
 * GPIO15 на GND (всегда)
 
 Стоит отметить, что UART конвертер зачастую может работатать в двух режимах: 5в и 3.3в. Перед подключением убедитесь, что сейчас режим 3.3в, так как 5в просто сожжет чип.
+
+Ещё в теории есть возможность обновлять чип по воздуху. Это возможно благодаря Arduino OTA, в библиотере ESPHelper есть её поддержка, [вот пример](https://github.com/ItKindaWorks/ESPHelper/blob/master/examples/OTA/OTA.ino), однако у меня чип не обнаруживается через Arduino IDE, так же не получается обновиться при помощи [веб-сервера](http://esp8266.github.io/Arduino/versions/2.0.0/doc/ota_updates/ota_updates.html#web-browser).
