@@ -32,7 +32,7 @@ Speaking of flashing ESP8266-12. I reccomend to disconnect everything from chip 
 
 Notice that your UART converter can output two currencies: 5v and 3.3v. Check if it is in 3.3v mode because 5v will burn the chip.
 
-In theory you can update chip over the air. There is a library for it named *Arduino OTA*. And ESPHelper library [supports OTA updates](https://github.com/ItKindaWorks/ESPHelper/blob/master/examples/OTA/OTA.ino) but on my computer Arduino IDE cannot *see* my chip. And I tried to update it using [web update](http://esp8266.github.io/Arduino/versions/2.0.0/doc/ota_updates/ota_updates.html#web-browser) but had no success at that too.
+In theory you can update chip over the air. There is a library for it named *Arduino OTA*. And ESPHelper library [supports OTA updates](https://github.com/ItKindaWorks/ESPHelper/blob/master/examples/OTA/OTA.ino) but on my computer Arduino IDE cannot *see* my chip. And I tried to update it using [web update](http://esp8266.github.io/Arduino/versions/2.0.0/doc/ota_updates/ota_updates.html#http-server) but had no success at that too.
 
 <hr>
 `ru`<br>
@@ -68,4 +68,4 @@ In theory you can update chip over the air. There is a library for it named *Ard
 
 Стоит отметить, что UART конвертер зачастую может работатать в двух режимах: 5в и 3.3в. Перед подключением убедитесь, что сейчас режим 3.3в, так как 5в просто сожжет чип.
 
-Ещё в теории есть возможность обновлять чип по воздуху. Это возможно благодаря Arduino OTA, в библиотере ESPHelper есть её поддержка, [вот пример](https://github.com/ItKindaWorks/ESPHelper/blob/master/examples/OTA/OTA.ino), однако у меня чип не обнаруживается через Arduino IDE, так же не получается обновиться при помощи [веб-сервера](http://esp8266.github.io/Arduino/versions/2.0.0/doc/ota_updates/ota_updates.html#web-browser).
+Ещё в теории есть возможность обновлять чип по воздуху. Это возможно благодаря Arduino OTA, в библиотере ESPHelper есть её поддержка, [вот пример](https://github.com/ItKindaWorks/ESPHelper/blob/master/examples/OTA/OTA.ino), однако у меня чип не обнаруживается через Arduino IDE, так же не получается обновиться при помощи [веб-сервера](http://esp8266.github.io/Arduino/versions/2.0.0/doc/ota_updates/ota_updates.html#http-server).
