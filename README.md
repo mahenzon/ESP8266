@@ -1,7 +1,7 @@
 # Home automation with HAP-NodeJS and ESP8266
 
 `en`<br>
-Current project is in development state. Some new commits are possible.
+This project is currently finished but some new commits are possible.
 
 To make iOS devices discovery HomeKit devices [HAP-NodeJS](https://github.com/KhaosT/HAP-NodeJS) is required.<br>
 Following libraries needed to be installed (for installation use `npm install %packetname%`):
@@ -30,13 +30,15 @@ Speaking of flashing ESP8266-12. I reccomend to disconnect everything from chip 
 * EN/CH_PD to VCC (always)
 * GPIO15 to GND (always)
 
+Transistors used in this project: **IRLML6244TRPBF**
+
 Notice that your UART converter can output two currencies: 5v and 3.3v. Check if it is in 3.3v mode because 5v will burn the chip.
 
 In theory you can update chip over the air. There is a library for it named *Arduino OTA*. And ESPHelper library [supports OTA updates](https://github.com/ItKindaWorks/ESPHelper/blob/master/examples/OTA/OTA.ino) but on my computer Arduino IDE cannot *see* my chip. And I tried to update it using [web update](http://esp8266.github.io/Arduino/versions/2.0.0/doc/ota_updates/ota_updates.html#web-browser) but had no success at that too.
 
 <hr>
 `ru`<br>
-Данный проект ещё в разработке. Возможны некоторые обновления.
+Данный проект завершен, однако возможны некоторые обновления.
 
 Для обнаружения iOS девайсом устройств HomeKit требуется [HAP-NodeJS](https://github.com/KhaosT/HAP-NodeJS).<br>
 Для работы представленных модулей требуется установка следующих библиотек для node-JS (для установки используйте `npm install %имяпакета%`):
@@ -65,6 +67,8 @@ In theory you can update chip over the air. There is a library for it named *Ard
 * GPIO0 на GND (при подаче питания)
 * EN/CH_PD на VCC (всегда)
 * GPIO15 на GND (всегда)
+
+Модель используемых транзисторов: **IRLML6244TRPBF**
 
 Стоит отметить, что UART конвертер зачастую может работатать в двух режимах: 5в и 3.3в. Перед подключением убедитесь, что сейчас режим 3.3в, так как 5в просто сожжет чип.
 

@@ -1,15 +1,15 @@
 #include "ESPHelper.h" // you need to download this library from here https://github.com/ItKindaWorks/ESPHelper and add to Arduino IDE
 
-#define TOPIC "/home/RGBLight1"  // mqtt topic that ESP8266 will be monitoring for new commands
+#define TOPIC "/home/RGBLight1"  // topic that ESP8266 will be monitoring for new commands
 #define STATUS TOPIC "/status"
 
-#define RED_PIN_LEFT 16    
+#define RED_PIN_LEFT 16
 #define GREEN_PIN_LEFT 14
 #define BLUE_PIN_LEFT 12
 
-#define RED_PIN_RIGHT 5    
+#define RED_PIN_RIGHT 5
 #define GREEN_PIN_RIGHT 4
-#define BLUE_PIN_RIGHT 10
+#define BLUE_PIN_RIGHT 15
 
 #define POWER_SWITCH_PIN 13
 
@@ -49,7 +49,6 @@ char* lightTopic = TOPIC;
 char* statusTopic = STATUS;
 
 
-
 const int redPinLeft = RED_PIN_LEFT;
 const int greenPinLeft = GREEN_PIN_LEFT;
 const int bluePinLeft = BLUE_PIN_LEFT;
@@ -71,11 +70,10 @@ ESPHelper myESP(&homeNet);
 
 
 // If you want to use your chip with multiple networks modify next lines and remove that above
-
 /*
-netInfo homeNet1 = {.name = myChipName, .mqtt = "YOUR MQTT-IP1", .ssid = "YOUR SSID1", .pass = "YOUR NETWORK PASS1"};
-netInfo homeNet2 = {.name = myChipName, .mqtt = "YOUR MQTT-IP2", .ssid = "YOUR SSID2", .pass = "YOUR NETWORK PASS2"};
-netInfo homeNet3 = {.name = myChipName, .mqtt = "YOUR MQTT-IP3", .ssid = "YOUR SSID3", .pass = "YOUR NETWORK PASS3"};
+netInfo homeNet1 = {.name = "NETWORK NICKNAME1", .mqtt = "YOUR MQTT-IP1", .ssid = "YOUR SSID1", .pass = "YOUR NETWORK PASS1"};
+netInfo homeNet2 = {.name = "NETWORK NICKNAME2", .mqtt = "YOUR MQTT-IP2", .ssid = "YOUR SSID2", .pass = "YOUR NETWORK PASS2"};
+netInfo homeNet3 = {.name = "NETWORK NICKNAME3", .mqtt = "YOUR MQTT-IP3", .ssid = "YOUR SSID3", .pass = "YOUR NETWORK PASS3"};
 
 netInfo *knownNetworks[3] = {
 	&homeNet1,
@@ -83,10 +81,11 @@ netInfo *knownNetworks[3] = {
 	&homeNet3
 };
 
-ESPHelper myESP(knownNetworks, 3);   
+ESPHelper myESP(knownNetworks, 3);
 */
 
 void setup() {
+	analogWriteRange(256);
 	pinMode(builtInLED, OUTPUT);  //init builtin led as output
 	digitalWrite(builtInLED, HIGH);  // Builtin LED is off on logical 1
 
@@ -119,10 +118,18 @@ void setup() {
 	currentColorRight.green = 255;
 	currentColorRight.blue = 255;
 
-
 	delay(1000);
 
 	colorTest();
+
+	// If you beleive in Arduino OTA use that 3 lines below
+	// (don't forget to set tour own password for Arduino OTA and hostname)
+
+	/*
+	myESP.OTA_enable();
+	myESP.OTA_setPassword("SET OTA PASSWORD");
+	myESP.OTA_setHostname("SET OTA HOSTNAME");
+	*/
 
 	myESP.addSubscription(lightTopic);
 	myESP.begin();
@@ -131,7 +138,6 @@ void setup() {
 	myESP.enableHeartbeat(builtInLED);
 	myESP.publish(statusTopic, "Starting main", true);
 }
-
 
 
 void loop(){
@@ -148,13 +154,10 @@ void lightHandler(){
 			if(superMode == STANDBY){
 
 				// powering off left strip
-				analogWrite(redPinLeft, 0);
-				analogWrite(greenPinLeft, 0);
-				analogWrite(bluePinLeft, 0);
+				setColorLeft(0,0,0);
+
 				// powering off right strip
-				analogWrite(redPinRight, 0);
-				analogWrite(greenPinRight, 0);
-				analogWrite(bluePinRight, 0);
+				setColorRight(0, 0, 0);
 
 				// as no strip is ON, disabling PC power supply unit
 				digitalWrite(powerPin, LOW);
@@ -167,13 +170,9 @@ void lightHandler(){
 
 				if(updateSide == LEFT){
 					if(isPoweredOnLeft){
-						analogWrite(redPinLeft, currentColorLeft.red);
-						analogWrite(greenPinLeft, currentColorLeft.green);
-						analogWrite(bluePinLeft, currentColorLeft.blue);
+						setColorLeft(currentColorLeft.red, currentColorLeft.green, currentColorLeft.blue);
 					} else {
-						analogWrite(redPinLeft, 0);
-						analogWrite(greenPinLeft, 0);
-						analogWrite(bluePinLeft, 0);
+						setColorLeft(0,0,0);
 						if(isDebugNow){
 							myESP.publish(statusTopic, "Powered off left side", true);
 						 };
@@ -181,13 +180,9 @@ void lightHandler(){
 				}
 				else if (updateSide == RIGHT){
 					if (isPoweredOnRight){
-						analogWrite(redPinRight, currentColorRight.red);
-						analogWrite(greenPinRight, currentColorRight.green);
-						analogWrite(bluePinRight, currentColorRight.blue);
+						setColorRight(currentColorRight.red, currentColorRight.green, currentColorRight.blue);
 					} else {
-						analogWrite(redPinRight, 0);
-						analogWrite(greenPinRight, 0);
-						analogWrite(bluePinRight, 0);
+						setColorRight(0, 0, 0);
 					}
 				};
 			}
@@ -290,6 +285,17 @@ void callback(char* topic, byte* payload, unsigned int length) {
 	 myESP.publish(statusTopic, statusString, true);
 }
 
+void setColorLeft(int red, int green, int blue){
+	analogWrite(redPinLeft, red);
+	analogWrite(greenPinLeft, green);
+	analogWrite(bluePinLeft, blue);
+}
+
+void setColorRight(int red, int green, int blue){
+	analogWrite(redPinRight, red);
+	analogWrite(greenPinRight, green);
+	analogWrite(bluePinRight, blue);
+}
 
 void colorTest(){
 	digitalWrite(powerPin, HIGH);  // power on PC's power supply unit

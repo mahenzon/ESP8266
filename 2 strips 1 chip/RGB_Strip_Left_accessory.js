@@ -34,7 +34,7 @@ var LightController = {
   username: "AA:AA:AA:AA:AA:AA", // MAC like address used by HomeKit to differentiate accessories.
   manufacturer: "Suren Khorenyan", //manufacturer (optional)
   model: "v1.1", //model (optional)
-  serialNumber: "RGB_S_002", //serial number (optional)
+  serialNumber: "RGB_S_001", //serial number (optional)
 
 
   currentPower: 0,
