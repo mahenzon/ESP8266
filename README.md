@@ -37,7 +37,9 @@ Notice that your UART converter can output two currencies: 5v and 3.3v. Check if
 In theory you can update chip over the air. There is a library for it named *Arduino OTA*. And ESPHelper library [supports OTA updates](https://github.com/ItKindaWorks/ESPHelper/blob/master/examples/OTA/OTA.ino) but on my computer Arduino IDE cannot *see* my chip. And I tried to update it using [web update](http://esp8266.github.io/Arduino/versions/2.0.0/doc/ota_updates/ota_updates.html#web-browser) but had no success at that too.
 
 <hr>
-`ru`<br>
+
+`ru`
+<br>
 Данный проект завершен, однако возможны некоторые обновления.
 
 Для обнаружения iOS девайсом устройств HomeKit требуется [HAP-NodeJS](https://github.com/KhaosT/HAP-NodeJS).<br>
