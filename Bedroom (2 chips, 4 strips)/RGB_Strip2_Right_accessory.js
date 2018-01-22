@@ -45,9 +45,6 @@ var LightController = {
   model: "v1.3.3.7", //model (optional)
   serialNumber: "RGB_Strip_004", //serial number (optional)
 
-  externalColorUpdate: false,
-  externalPowerUpdate: false,
-
   currentPower: 0,
   lastPower: 0,
 
@@ -61,141 +58,137 @@ var LightController = {
 
 
   setPower: function(status) {
-    if(this.outputLogs) console.log("Setting the '%s' %s", this.name, status ? "on" : "off");
+    if(outputLogs) console.log("Setting the '%s' %s", this.name, status ? "on" : "off");
     this.currentPower = status;
     this.updatePower();
   },
 
   getPower: function() {
-    if(this.outputLogs) console.log("'%s' is %s!", this.name, this.currentPower ? "on" : "off");
+    if(outputLogs) console.log("'%s' is %s!", this.name, this.currentPower ? "on" : "off");
     return this.currentPower ? true : false;
   },
 
   setBrightness: function(brightness) {
-    if(this.outputLogs) console.log("Setting '%s' brightness to %s", this.name, brightness);
+    if(outputLogs) console.log("Setting '%s' brightness to %s", this.name, brightness);
     this.currentBrightness = brightness;
     this.updateLight();
   },
 
   getBrightness: function() {
-    if(this.outputLogs) console.log("'%s' brightness is %s", this.name, this.currentBrightness);
+    if(outputLogs) console.log("'%s' brightness is %s", this.name, this.currentBrightness);
     return this.currentBrightness;
   },
 
   setSaturation: function(saturation) {
-    if(this.outputLogs) console.log("Setting '%s' saturation to %s", this.name, saturation);
+    if(outputLogs) console.log("Setting '%s' saturation to %s", this.name, saturation);
     this.currentSaturation = saturation;
     this.updateLight();
   },
 
   getSaturation: function() {
-    if(this.outputLogs) console.log("'%s' saturation is %s", this.name, this.currentSaturation);
+    if(outputLogs) console.log("'%s' saturation is %s", this.name, this.currentSaturation);
     return this.currentSaturation;
   },
 
   setHue: function(hue) {
-    if(this.outputLogs) console.log("Setting '%s' hue to %s", this.name, hue);
+    if(outputLogs) console.log("Setting '%s' hue to %s", this.name, hue);
     this.currentHue = hue;
     this.updateLight();
   },
 
   getHue: function() {
-    if(this.outputLogs) console.log("'%s' hue is %s", this.name, this.currentHue);
+    if(outputLogs) console.log("'%s' hue is %s", this.name, this.currentHue);
     return this.currentHue;
   },
 
 
   identify: function() {
-    if(this.outputLogs) console.log("Identify the '%s'", this.name);
+    if(outputLogs) console.log("Identify the '%s'", this.name);
   },
 
   // this function checks if any changes about power were made and publishes a new MQTT message if true
   updatePower: function() {
-    if(this.lastPower != this.currentPower){
+    if (this.lastPower != this.currentPower) {
       if(outputLogs) console.log("Turning '%s' %s", this.name, this.currentPower ? "on" : "off");
-      if (this.externalPowerUpdate) {
-        if(outputLogs) console.log("This power update is external!");
-        this.externalPowerUpdate = false;
-      } else {
-        publishData(mqttPrefixPower + (this.currentPower ? "1" : "0"));
-      };
+      publishData(mqttPrefixPower + (this.currentPower ? "1" : "0"));
       this.lastPower = this.currentPower;
     }
   },
 
   // this function checks if any changes about color were made and publishes a new MQTT message if true
   updateLight: function() {
-    if(this.lastSaturation != this.currentSaturation || this.lastHue != this.currentHue || this.lastBrightness != this.currentBrightness){
-      if(this.outputLogs) console.log("Hue %s, Sat %s, Bri %s", this.currentHue, this.currentSaturation, this.currentBrightness);
+    if (this.lastBrightness != this.currentBrightness || this.lastSaturation != this.currentSaturation || this.lastHue != this.currentHue) {
+      if(outputLogs) console.log("Hue %s, Sat %s, Bri %s", this.currentHue, this.currentSaturation, this.currentBrightness);
 
-      if (this.externalColorUpdate) {
-        if(outputLogs) console.log("This color update is external!");
-        this.externalColorUpdate = false;
-      } else {
-        // As we need to control RGB light and iOS sends color in HSB (HSV) format, we need to convert it.
-        myColor = new color.HSV(this.currentHue/360, this.currentSaturation/100, this.currentBrightness/100).rgb();  //pass values in 0..1 range
-        // creating new RGB values. Multiply by 255 bc it returnes value in 0..1 range
-        red = Math.round(myColor.red() * 255);
-        green = Math.round(myColor.green() * 255);
-        blue = Math.round(myColor.blue() * 255);
+      // As we need to control RGB light and iOS sends color in HSB (HSV) format, we need to convert it.
+      myColor = new color.HSV(this.currentHue/360, this.currentSaturation/100, this.currentBrightness/100).rgb();  //pass values in 0..1 range
+      // creating new RGB values. Multiply by 255 bc it returnes value in 0..1 range
+      red = Math.round(myColor.red() * 255);
+      green = Math.round(myColor.green() * 255);
+      blue = Math.round(myColor.blue() * 255);
 
-        // formatting string to publish
-        // ex string 'cr090,000,157' where 'c' is for our ESP to recognize new color command, 'r' is for RIGHT and 3 numbers for red, green and blue in fixed places
-        toPublish = mqttPrefixColor + formatNumberLength(red) + ',' + formatNumberLength(green) + ',' +  formatNumberLength(blue);
-        publishData(toPublish);
-      };
+      // formatting string to publish
+      // ex string 'cr090,000,157' where 'c' is for our ESP to recognize new color command, 'r' is for RIGHT and 3 numbers for red, green and blue in fixed places
+      toPublish = mqttPrefixColor + formatNumberLength(red) + ',' + formatNumberLength(green) + ',' +  formatNumberLength(blue);
+      publishData(toPublish);
 
-      this.lastHue = this.currentHue;
-      this.lastSaturation = this.currentSaturation;
       this.lastBrightness = this.currentBrightness;
+      this.lastSaturation = this.currentSaturation;
+      this.lastHue = this.currentHue;
     }
   }
 }
 
-function updateHKColors() {
+function updateColorValues() {
   // update the Characteristic value so interested iOS devices can get notified
 
   // update Brightness
   if (LightController.lastBrightness != LightController.currentBrightness) {
-    LightController.externalColorUpdate = true;
     lightAccessory
       .getService(Service.Lightbulb)
-      .setCharacteristic(Characteristic.Brightness, LightController.currentBrightness);
-  }
+      .getCharacteristic(Characteristic.Brightness)
+      .updateValue(LightController.currentBrightness);
+    LightController.lastBrightness = LightController.currentBrightness;
+    if(outputLogs) console.log('Updated brightness to', LightController.currentBrightness);
+  };
 
   // update Saturation
   if (LightController.lastSaturation != LightController.currentSaturation) {
-    LightController.externalColorUpdate = true;
     lightAccessory
       .getService(Service.Lightbulb)
-      .setCharacteristic(Characteristic.Saturation, LightController.currentSaturation);
-  }
+      .getCharacteristic(Characteristic.Saturation)
+      .updateValue(LightController.currentSaturation);
+    LightController.lastSaturation = LightController.currentSaturation;
+    if(outputLogs) console.log('Updated saturation to', LightController.currentSaturation);
+  };
 
   // update Hue
   if (LightController.lastHue != LightController.currentHue) {
-    LightController.externalColorUpdate = true;
     lightAccessory
       .getService(Service.Lightbulb)
-      .setCharacteristic(Characteristic.Hue, LightController.currentHue);
-  }
+      .getCharacteristic(Characteristic.Hue)
+      .updateValue(LightController.currentHue);
+    LightController.lastHue = LightController.currentHue;
+    if(outputLogs) console.log('Updated hue to', LightController.currentHue);
+  };
 
 }
 
-function updateHKPower() {
+function updatePowerValue() {
   // update the Characteristic value so interested iOS devices can get notified
   if (LightController.lastPower != LightController.currentPower) {
-    LightController.externalPowerUpdate = true;
     lightAccessory
       .getService(Service.Lightbulb)
-      .setCharacteristic(Characteristic.On, LightController.currentPower);
+      .getCharacteristic(Characteristic.On)
+      .updateValue(LightController.currentPower);
     LightController.lastPower = LightController.currentPower;
-  }
+  };
 }
 
 client.on('message', function (topic, message) {
   var msg = message.toString();
-  if(outputLogs) console.log("[LEFT] New message on topic '" + topic + "':", msg);
   if (!(msg.endsWith('S'))) return;
+  if(outputLogs) console.log("[RIGHT] New message on topic '" + topic + "':", msg);
   if (msg.startsWith(mqttPrefixColor)) {
     var colors = msg.substring(mqttPrefixColor.length, msg.length - 1).split(',');
     if (colors.length != 3) return;
@@ -206,21 +199,21 @@ client.on('message', function (topic, message) {
     LightController.currentBrightness = newColor.value() * 100;
     LightController.currentSaturation = newColor.saturation() * 100;
     LightController.currentHue = newColor.hue() * 360;
-    updateHKColors();
+    updateColorValues();
 
   } else if (msg.startsWith(mqttPrefixPower)) {
     newPower = parseInt(msg.substring(mqttPrefixPower.length));
     if (isNaN(newPower)) return;
     if ([0, 1].indexOf(newPower) == -1) return;
     LightController.currentPower = newPower;
-    updateHKPower();
+    updatePowerValue();
   }
 });
 
 // Generate a consistent UUID for our light Accessory that will remain the same even when
 // restarting our server. We use the `uuid.generate` helper function to create a deterministic
 // UUID based on an arbitrary "namespace" and the word "light".
-var lightUUID = uuid.generate('hap-nodejs:accessories:light' + LightController.name);
+var lightUUID = uuid.generate('hap-nodejs:accessories:light:' + LightController.username);
 
 // This is the Accessory that we'll return to HAP-NodeJS that represents our light.
 var lightAccessory = exports.accessory = new Accessory(LightController.name, lightUUID);
