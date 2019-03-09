@@ -1,3 +1,9 @@
+# This project is archived because it's outdated
+
+## For a better project visit [surik00/RGBLight](https://github.com/surik00/RGBLight). Feel free to ask anything or even contribute!
+
+___
+
 # Home automation with HAP-NodeJS and ESP8266
 
 # en 🇬🇧
